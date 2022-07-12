@@ -1,7 +1,7 @@
 ---
 title: "LASER Badge"
 subtitle: "LASER Institute Orientation"
-author: "YOUR NAME HERE"
+author: "Mark LaVenia"
 date: "`r format(Sys.Date(),'%B %e, %Y')`"
 output:
   html_document:
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 ## Introduction
 
 Welcome to your first LASER badge! This LASER Orientation Badge is
-really a warm-up activitiy to introduce you to R Markdown and the coding
+really a warm-up activity to introduce you to R Markdown and the coding
 case studies that we will be using in the machine learning, network
 analysis, and text mining labs. It is a chance to become familiar with
 how RStudio and R Markdown works.
@@ -157,9 +157,9 @@ What do you notice about this data set? What do you wonder? Add one-two
 thoughts following the dashes next (you can add additional dashes if you
 like!):
 
--   
+-   603 obs. of 30 variables
 
--   
+-   Student-level data, including student id, academic performance  at the item level and summary info, context info, and student characteristics
 
 There are other ways to inspect your data; the `glimpse()` function
 provides one such way. Run the code below to take a glimpse at your
@@ -184,11 +184,11 @@ your area of work and/or research.
 
 What rows typically (or you think may) represent:
 
--   
+-   rows typically represent individual people, though it can be structured long, with information on an individual person (such as items on a test or points in time) represented as individual rows.
 
 What columns typically (or you think may) represent:
 
--   
+-   Columns typically represent information on an individual person, including context info, such as organization and geographic area to which they are associated.
 
 Next, we'll use a few functions that are handy for preparing data in
 table form.
@@ -235,7 +235,7 @@ variable to this code.
 
 ```{r}
 d |> 
-  select(student_id, total_points_possible, total_points_earned)
+  select(student_id, course_id, total_points_possible, total_points_earned)
 ```
 
 Once added, the output should be different than in the code above -
@@ -261,13 +261,13 @@ play around with the code a bit!).
 
 ```{r}
 d |> 
-  filter(FinalGradeCEMS > 70)
+  filter(FinalGradeCEMS > 99)
 ```
 
 What happens when you change the cut-off from 70 to something else? Add
 a thought (or more):
 
--   
+-   I changed the cutoff to > 99, which drastically reduced the number of cases, to now only 5 obs.
 
 ### Arrange
 
@@ -302,8 +302,8 @@ glimpsed at the names of all of the variables.
 
 ```{r}
 d |> 
-  select(student_id, FinalGradeCEMS) |> 
-  arrange(desc(FinalGradeCEMS))
+  select(student_id, FinalGradeCEMS, Points_Earned) |> 
+  arrange(desc(Points_Earned))
 ```
 
 ### Reach 1 🎉
@@ -318,6 +318,11 @@ who wish to do a bit more with these functions at this time (we'll do
 more in class, too!)*
 
 ```{r}
+glimpse(d)
+
+d |> 
+  select(student_id, TimeSpent, Points_Earned) |> 
+  arrange(desc(Points_Earned), desc(TimeSpent))
 
 ```
 
@@ -357,7 +362,7 @@ consider this list of valid color names here:
 
 ```{r}
 ggplot(d, aes(x = FinalGradeCEMS)) +
-  geom_histogram(fill = "blue")
+  geom_histogram(fill = "darkviolet")
 ```
 
 Finally, we'll make one more change; visualize the distribution of
@@ -366,8 +371,10 @@ so by swapping out the name for another variable with FinalGradeCEMS.
 Also, change the color to one other than blue.
 
 ```{r}
-ggplot(d, aes(x = FinalGradeCEMS)) +
-  geom_histogram(fill = "blue")
+glimpse(d)
+
+ggplot(d, aes(x = Points_Earned)) +
+  geom_histogram(fill = "darkviolet")
 ```
 
 ### Reach 2 🎉
@@ -378,7 +385,7 @@ the names of two variables to the code below for what is now simply XXX
 (a placeholder).
 
 ```{r}
-ggplot(d, aes(x = XXX, y = XXX)) +
+ggplot(d, aes(x = TimeSpent, y = Points_Earned)) +
   geom_point()
 ```
 
@@ -408,11 +415,17 @@ Notice how above the variables are separated by a + symbol. Below, add
 *another* - a third - variable to the regression model. Specifically,
 add a variable students' initial, self-reported interest in science,
 `int` - and any other variable(s) you like! What do you notice about the
-results? We're going to dive into this *much* more: if you have many
+results? 
+
+-   I added semester to the model. With S116 as the reference category, there was statistically signficiant ( p < .05) difference in final grades for students in Semester S216, at an estimated -4 points.
+
+We're going to dive into this *much* more: if you have many
 questions now, you're in the right spot!
 
 ```{r}
-m2 <- lm(FinalGradeCEMS ~ TimeSpent + subject, data = d)
+table(d$semester, useNA = "ifany")
+
+m2 <- lm(FinalGradeCEMS ~ TimeSpent + subject + semester, data = d)
 summary(m2)
 ```
 
