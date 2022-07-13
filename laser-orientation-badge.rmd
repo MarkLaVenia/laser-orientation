@@ -236,6 +236,7 @@ variable to this code.
 ```{r}
 d |> 
   select(student_id, course_id, total_points_possible, total_points_earned)
+
 ```
 
 Once added, the output should be different than in the code above -
